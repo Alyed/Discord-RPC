@@ -1,4 +1,5 @@
 import sys
+from tools.config_clearer import clear_configs
 from tools.rpc_handler import RPC_Handler
 from site_packages.termcolor.termcolor import colored, cprint
 from tools.justrw import Justrw
@@ -7,10 +8,33 @@ from datetime import datetime
 from tools.error_handler import ErrorLogger
 
 blueln = lambda x: colored(x, "blue")
-configs = Jsonrw("./tools/configs.json")
+last_client_id = Justrw("./tools/last_client_id")
+
+
+def recover():
+    config_data = Jsonrw("./tools/configs.json")
+    db = {
+        "details": None,
+        "state": None,
+        "start": None,
+        "end": None,
+        "large_image": None,
+        "large_text": None,
+        "small_image": None,
+        "small_text": None,
+        "party_id": None,
+        "party_size": None,
+        "join": None,
+        "spectate": None,
+        "match": None,
+        "buttons": None,
+        "instance": None,
+    }
+    config_data.write(db)
+
 
 try:
-    if configs.read()["last_client_id"] is None:
+    if last_client_id.read() == "":
         cprint(
             "\nNever share your {0} to anyone.\nIf you share your client ID to someone, "
             "they {1} at anytime.\nYou won't be able to {2} "
@@ -20,10 +44,10 @@ try:
                 blueln("change your client ID"),
             )
         )
-        client_id = input("Enter your bot's client ID\n> ")
+        client_id = input("Enter your bot's client ID/application ID\n> ")
 
     else:
-        client_id = configs.read()["last_client_id"]
+        client_id = last_client_id.read()
 
     try:
         client_id = int(client_id)
@@ -50,6 +74,11 @@ try:
                 cprint("❌ Client ID is invalid ", "red")
             except AssertionError:
                 print("❌ Not connected to client ")
+            except ConnectionResetError:
+                cprint(
+                    "❌ Connection was reset and couldn't be completed. Maybe the client ID is invalid",
+                    "red",
+                )
             else:
                 cprint(
                     "✔ Successfully started RPC status ",
@@ -59,28 +88,35 @@ try:
                 while 1:
                     try:
                         ran_frm = Justrw("./tools/from")
-                        data = Justrw("./tools/restarted")
+                        wanted_restart = Justrw("./tools/restarted")
                         if ran_frm.read() == "0":
                             cprint(
                                 "* This program wasn't ran from main. Therefore cannot be restarted. ",
                                 "yellow",
                             )
-                            r = input("\n[E] Exit\n\n> ")
+                            r = input("\n[E] Exit\n\n> ").lower()
+                            if r != "e":
+                                continue
+
                         else:
-                            d = configs.read()
-                            d["last_client_id"] = client_id
-                            configs.write(d)
+                            last_client_id.write(str(client_id))
                             print(
-                                "\n[PRO!TIP] Change your configuration file(./tools/configs.json) and restart to load the new configuration without "
+                                "\n[PRO!TIP] Change your configuration(./tools/configs.json) and restart to load the new configuration without "
                                 "stopping the PRC connection."
                             )
-                            r = input("\n[R] Restart\n[E] Exit\n\n> ").lower()
+                            r = input(
+                                "\n[R] Restart\n[E] Exit\n[C] Reconfigure\n\n> "
+                            ).lower()
 
-                        if r.lower() in ("r", "e"):
+                        if r.lower() in ("r", "e", "c"):
                             if r == "r":
-                                data.write("true")
+                                wanted_restart.write("true")
+                            elif r == "e":
+                                wanted_restart.write("false")
                             else:
-                                data.write("false")
+                                print("Data has been recovered")
+                                recover()
+                                wanted_restart.write("true")
                         else:
                             continue
 
@@ -90,6 +126,7 @@ try:
                         break
 
 except KeyboardInterrupt:
+    clear_configs()
     print("\n\n✔️ Requested to exit...Exited. ")
 
 except Exception as e:
@@ -100,10 +137,13 @@ except Exception as e:
         err = (
             "Filename: {}\n"
             "Error Type: {}\n"
-            "Process Type: Parent Process\n"
+            "Process Type: Child Process\n"
             "Description: {}\n"
-            "Line No: {}".format(
-                err["filename"], err["etype"], err["des"], err["lineno"]
+            "Line No: {}\n".format(
+                err["filename"],
+                err["etype"],
+                err["des"],
+                err["lineno"],
             )
         )
         err = "~~~\n[{}]\n{}\n~~~\n\n".format(date, err)
@@ -120,5 +160,6 @@ except Exception as e:
                 ),
             )
         )
+        clear_configs()
 
 sys.exit()

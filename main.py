@@ -1,4 +1,5 @@
 import os, sys
+from tools.config_clearer import clear_configs
 from tools.justrw import Justrw
 from tools.jsonrw import Jsonrw
 from tools.clear import clear
@@ -31,7 +32,7 @@ try:
 except Exception as e:
     date = str(datetime.utcnow())
     err = ErrorLogger(e)
-    err = err.personal_log()
+    err = err.full_log()
     err = (
         "Filename: {}\n"
         "Error Type: {}\n"
@@ -57,8 +58,4 @@ except Exception as e:
 else:
     sys.exit()
 finally:
-    frm.write("0")
-    configs = Jsonrw("./tools/configs.json")
-    data = configs.read()
-    data["last_client_id"] = None
-    configs.write(data)
+    clear_configs()

@@ -13,7 +13,7 @@ class ErrorLogger:
 
 	def personal_log(self):
 		"""
-		Returns error with very little information respecting user privacy
+		Returns error with very little information considering user privacy
 		"""
 		return {"filename": self.__fname, 
 				"etype": self.__etype, 

@@ -1,0 +1,7 @@
+
+
+1. Fixed `FileNotFoundError` error in some scenarious.
+2. Added `Reconfigure` option in case if the config file is damaged, it can be reconfigured.
+3. Fixed a bug where other inputs was accepted even if the prorgam wasn't started from `main.py` file.
+4. Fixed `ConnectionResetError` error when the connection was reset or an Invalid ID was passed.
+5. Fixed a bug where user specific data and configs wasn't being reset when error occurred during runtime.

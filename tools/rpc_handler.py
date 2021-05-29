@@ -15,6 +15,18 @@ class RPC_Handler:
             except RPC_Handler.InvalidPipe:
                 raise ConnectionError("Discord is not running")
 
+            except FileNotFoundError:
+                # FileNotFoundError only happens in this module when the Discord
+                # cache is not found. So it basically means that either the device has restarted
+                # so the Discord cache was not created and it didn't find the file to check for cache, or
+                # Discord app is not installed in the system.
+                # In general, both ways, if you see simply, then Discord is not running. So we can raise
+                # ConnectionError in here. That will be handled in future as Discord is not running.
+                raise ConnectionError("Discord cache was not found")
+
+            except ConnectionResetError:
+                raise ConnectionError("Client ID is maybe invalid")
+
             except Exception as e:
                 if not isinstance(e, RPC_Handler.InvalidID):
                     raise e
