@@ -1,0 +1,18 @@
+{
+  "details": null,
+  "state": null,
+  "start": null,
+  "end": null,
+  "large_image": null,
+  "large_text": null,
+  "small_image": null,
+  "small_text": null,
+  "party_id": null,
+  "party_size": null,
+  "join": null,
+  "spectate": null,
+  "match": null,
+  "buttons": null,
+  "instance": null,
+  "last_client_id": null
+}
