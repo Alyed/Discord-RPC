@@ -36,5 +36,5 @@ If you are a developer and willing to change or modify the files, please proceed
 This program was never possible without these open-source packages. Thanks to the devs for making it this far!
 
 #### **Packages used in this project**
-> *PyPresence*\
-> *Termcolor*
+> *[PyPresence](https://pypi.org/project/pypresence/)*\
+> *[Termcolor](https://pypi.org/project/termcolor/)*
